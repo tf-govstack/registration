@@ -3,7 +3,7 @@
 
 # Registration Processor
 
-### Overview
+## Overview
 This repository contains source code and design documents for MOSIP Registration Processor which is the server-side module to manage ID lifecycle.  The modules exposes API endpoints.  
 
 [Overview of Registration Processor](https://docs.mosip.io/1.2.0/modules/registration-processor)
