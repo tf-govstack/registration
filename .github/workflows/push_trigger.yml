@@ -379,7 +379,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-registration-transaction-service
       SERVICE_LOCATION: registration-processor/post-processor/registration-processor-registration-transaction-service
     steps:
@@ -437,7 +437,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-abis
       SERVICE_LOCATION: registration-processor/core-processor/registration-processor-abis
 
@@ -496,7 +496,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-reprocessor
       SERVICE_LOCATION: registration-processor/workflow-engine/registration-processor-reprocessor
 
@@ -554,7 +554,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-dmz-packet-server
       SERVICE_LOCATION: registration-processor/init/registration-processor-dmz-packet-server
 
@@ -602,7 +602,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-registration-status-service
       SERVICE_LOCATION: registration-processor/init/registration-processor-registration-status-service
 
@@ -661,7 +661,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-notification-service
       SERVICE_LOCATION: registration-processor/registration-processor-notification-service
 
@@ -720,7 +720,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-processor-workflow-manager-service
       SERVICE_LOCATION: registration-processor/workflow-engine/registration-processor-workflow-manager-service
 
@@ -777,7 +777,7 @@ jobs:
   sonar_analysis:
     runs-on: ubuntu-latest
     env:
-      NAMESPACE: mosipdev
+      NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: registration-client
       SERVICE_LOCATION: registration
     steps:
