@@ -186,7 +186,10 @@ public class MetaInfoTagGenerator implements TagGenerator {
 
 	private Map<String, String> getMapFromLabelValueArray(JSONArray jsonArray) throws IOException, JSONException {
         Map<String, String> map = new HashMap<String, String>();
+        regProcLogger.error("INSIDE getMapFromLabelValueArray Array Length:: " + jsonArray.length());
+        regProcLogger.error("INSIDE getMapFromLabelValueArray JSON ARRAY:: " + jsonArray);
 		for (int i =0; i < jsonArray.length(); i++) {
+			regProcLogger.error("INSIDE getMapFromLabelValueArray Object :: " + jsonArray.getInt(i));
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			FieldValue fieldValue = objectMapper.readValue(jsonObject.toString(), FieldValue.class);
 			map.put(fieldValue.getLabel(), fieldValue.getValue());
