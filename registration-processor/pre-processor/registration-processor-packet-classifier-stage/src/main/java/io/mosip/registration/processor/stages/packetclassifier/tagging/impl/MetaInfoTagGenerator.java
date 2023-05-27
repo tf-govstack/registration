@@ -189,7 +189,7 @@ public class MetaInfoTagGenerator implements TagGenerator {
         regProcLogger.error("INSIDE getMapFromLabelValueArray Array Length:: " + jsonArray.length());
         regProcLogger.error("INSIDE getMapFromLabelValueArray JSON ARRAY:: " + jsonArray);
 		for (int i =0; i < jsonArray.length(); i++) {
-			regProcLogger.error("INSIDE getMapFromLabelValueArray Object :: " + jsonArray.getInt(i));
+			regProcLogger.error("INSIDE getMapFromLabelValueArray Object :: " + jsonArray.get(i));
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			FieldValue fieldValue = objectMapper.readValue(jsonObject.toString(), FieldValue.class);
 			map.put(fieldValue.getLabel(), fieldValue.getValue());
