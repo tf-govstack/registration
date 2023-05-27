@@ -110,6 +110,8 @@ public class MetaInfoTagGenerator implements TagGenerator {
                 PlatformErrorMessages.RPR_PCM_OPERATIONS_DATA_ENTRY_NOT_AVAILABLE.getCode(), 
                 PlatformErrorMessages.RPR_PCM_OPERATIONS_DATA_ENTRY_NOT_AVAILABLE.getMessage());
         JSONArray operationsDataJsonArray = new JSONArray(operationsDataString);
+        regProcLogger.error("OPERATIONSDATA STRING :: " + operationsDataString);
+        regProcLogger.error("OPERATIONSDATA STRING :: " + operationsDataJsonArray);
         Map<String, String> operationsDataMap = getMapFromLabelValueArray(operationsDataJsonArray);
         operationsDataTagLabels.forEach(tagLabel -> {
             if(operationsDataMap.containsKey(tagLabel)) {
