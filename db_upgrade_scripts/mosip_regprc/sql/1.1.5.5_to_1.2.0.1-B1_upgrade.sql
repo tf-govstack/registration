@@ -1,25 +1,3 @@
--- -------------------------------------------------------------------------------------------------
--- Database Name: mosip_regprc
--- Release Version 	: 1.2
--- Purpose    		: Database Alter scripts for the release for Registration Processor DB.       
--- Create By   		: Ram Bhatt
--- Created Date		: Mar-2021
--- 
--- Modified Date        Modified By         Comments / Remarks
--- -------------------------------------------------------------------------------------------------
--- Apr-2021		Ram Bhatt	   Added resume_remove_tags column to registration table
--- Apr-2021		Ram Bhatt	   Added rows to transaction_type.csv
--- May-2021		Ram Bhatt	   Creation of last_success_stage_name in registration table
--- Jun-2021		Ram Bhatt	   Added rows to transaction_type.csv
--- Jun-2021		Ram Bhatt	   Added columns to registration list table
--- Jun-2021 		Ram Bhatt	   Create crypto salt table.
--- July-2021		Ram Bhatt	   Added rows to transaction_type.csv
--- Jul-2021		Ram Bhatt	   Multiple table changes on regprc db
--- Aug-2021		Ram Bhatt	   Remove resume_remove_tags column from registration table
--- Aug-2021		Ram Bhatt	   Added pause_rule_ids column to registration table
--- Sep-2021		Ram Bhatt	   Anonymous profile table creation
--- Apr-2022		JyotiPrakashNayak	   Removed column 'reg_type' and added 'process'
-----------------------------------------------------------------------------------------------------
 \c mosip_regprc sysadmin
 
 ----------------------------------------------Multiple table level changes on regprc db-------------------------------------------------------
@@ -108,11 +86,6 @@ ALTER TABLE regprc.registration DROP CONSTRAINT pk_reg_id CASCADE;
 ALTER TABLE regprc.registration ALTER COLUMN workflow_instance_id SET NOT NULL;
 ALTER TABLE regprc.registration ADD CONSTRAINT pk_reg_id PRIMARY KEY (workflow_instance_id);
 
-ALTER TABLE regprc.registration_list DROP CONSTRAINT pk_reglist_id;
-ALTER TABLE regprc.registration_list ALTER COLUMN workflow_instance_id SET NOT NULL;
-ALTER TABLE regprc.registration_list ADD CONSTRAINT pk_reglist_id PRIMARY KEY (workflow_instance_id);
-
-
 ALTER TABLE regprc.individual_demographic_dedup ADD CONSTRAINT fk_idemogd_reg FOREIGN KEY (workflow_instance_id)
 REFERENCES regprc.registration (workflow_instance_id) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -139,29 +112,28 @@ ALTER TABLE regprc.registration ADD COLUMN default_resume_action character varyi
 ALTER TABLE regprc.registration ADD COLUMN pause_rule_ids character varying(256);
 
 ----------------------------------------------------------------------------------------------------
-ALTER TABLE regprc.registration_transaction DROP CONSTRAINT IF EXISTS fk_regtrn_trntyp ;
-ALTER TABLE regprc.reg_manual_verification  DROP CONSTRAINT IF EXISTS fk_rmnlver_trntyp ;
-ALTER TABLE regprc.reg_demo_dedupe_list  DROP CONSTRAINT IF EXISTS fk_regded_regtrn ;
-
-TRUNCATE TABLE regprc.transaction_type cascade ;
-
-\COPY regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes) FROM './dml/regprc-transaction_type.csv' delimiter ',' HEADER  csv;
-
-UPDATE regprc.registration_transaction SET trn_type_code='QUALITY_CLASSIFIER' WHERE trn_type_code='QUALITY_CHECK';
-UPDATE regprc.reg_manual_verification SET trntyp_code='QUALITY_CLASSIFIER' WHERE trntyp_code='QUALITY_CHECK';
-
-ALTER TABLE regprc.registration_transaction ADD CONSTRAINT  fk_regtrn_trntyp FOREIGN KEY (trn_type_code,lang_code)
-REFERENCES regprc.transaction_type (code,lang_code) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
-
-ALTER TABLE regprc.reg_manual_verification ADD CONSTRAINT  fk_rmnlver_trntyp FOREIGN KEY (trntyp_code,lang_code)
-REFERENCES regprc.transaction_type (code,lang_code) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
-
-ALTER TABLE regprc.reg_demo_dedupe_list ADD CONSTRAINT  fk_regded_regtrn FOREIGN KEY (regtrn_id)
-REFERENCES regprc.registration_transaction (id) MATCH FULL
-ON DELETE NO ACTION ON UPDATE NO ACTION;
-
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('VERIFICATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('QUALITY_CLASSIFIER','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('WORKFLOW_RESUME','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('CMD_VALIDATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('SUPERVISOR_VALIDATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('OPERATOR_VALIDATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('INTRODUCER_VALIDATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('INTERNAL_WORKFLOW_ACTION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('BIOMETRIC_EXTRACTION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('FINALIZATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
+INSERT INTO regprc.transaction_type (code,descr,lang_code,is_active,cr_by,cr_dtimes,upd_by,upd_dtimes,is_deleted,del_dtimes) VALUES
+	 ('MANUAL_ADJUDICATION','transaction_done','eng',true,'MOSIP_SYSTEM',now(),NULL,NULL,false,NULL);
 ------------------------------------------------------------------------------------------------------
 
 
