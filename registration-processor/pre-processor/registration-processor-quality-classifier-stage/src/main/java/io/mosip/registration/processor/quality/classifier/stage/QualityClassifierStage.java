@@ -444,6 +444,7 @@ public class QualityClassifierStage extends MosipVerticleAPIManager {
 			birArray[0] = bir;
 			if(!biometricType.name().equalsIgnoreCase(BiometricType.EXCEPTION_PHOTO.name()) ) {
 				iBioProviderApi instance = null;
+				regProcLogger.error("BiometricType :: " + biometricType.name());
 				try {
 						try {
 							instance =  getBioSdkInstance(biometricType);
@@ -455,7 +456,9 @@ public class QualityClassifierStage extends MosipVerticleAPIManager {
 						try {
 						qualityScoreresponse = instance.getSegmentQuality(birArray, null);
 			}catch (Exception e) {
+				e.printStackTrace();
 				regProcLogger.error("INSIDE getQualityTags :: Error Occured while getSegmentQuality for " + bir.getBdbInfo().getType().get(0) + " with birArray " + (birArray.length > 0 ? "Valid birArray" :"Not valid birArray") + " qualityScoreresponse "  + qualityScoreresponse + e.getMessage() );
+				regProcLogger.error("BIOINSTANCE :: " + instance.getClass().getName());
 			}
 		
 					float score = qualityScoreresponse[0];
