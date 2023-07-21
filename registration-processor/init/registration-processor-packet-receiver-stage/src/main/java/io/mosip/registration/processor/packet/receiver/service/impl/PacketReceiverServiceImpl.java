@@ -289,7 +289,7 @@ public class PacketReceiverServiceImpl implements PacketReceiverService<File, Me
 		/** Module-Id can be Both Success/Error code */
 		String moduleId = PlatformSuccessMessages.PACKET_RECEIVER_VALIDATION_SUCCESS.getCode();
 		String moduleName = ModuleName.PACKET_RECEIVER.toString();
-		registrationStatusService.addRegistrationStatus(dto, moduleId, moduleName);
+		registrationStatusService.addRegistrationStatus(dto, moduleId, moduleName, true);
 		storageFlag = true;
 		description
 				.setMessage(PacketReceiverConstant.PACKET_SUCCESS_UPLOADED_IN_PACKET_RECIVER + dto.getRegistrationId());

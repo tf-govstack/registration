@@ -51,7 +51,7 @@ public interface RegistrationStatusService<T, U, D> {
 	 * @param moduleName
 	 *            the module name
 	 */
-	public void addRegistrationStatus(U registrationStatusDto, String moduleId, String moduleName);
+	public void addRegistrationStatus(U registrationStatusDto, String moduleId, String moduleName, boolean isSetDefaultStatusCode);
 
 	/**
 	 * Update registration status.

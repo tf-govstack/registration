@@ -1300,6 +1300,12 @@ public enum PlatformErrorMessages {
 
 	RPR_WAA_INVALID_INPUT_PARAMETER(PlatformConstants.RPR_WORKFLOW_ACTION_API + "001",
 			"Invalid Request Value - %s"),
+	
+	RPR_WIA_MISSING_INPUT_PARAMETER(PlatformConstants.RPR_WORKFLOW_INSTANCE_API + "000",
+			"Missing Request Value - %s"),
+
+	RPR_WIA_INVALID_INPUT_PARAMETER(PlatformConstants.RPR_WORKFLOW_INSTANCE_API + "001",
+			"Invalid Request Value - %s"),
 
 	RPR_WAA_UNKNOWN_EXCEPTION(PlatformConstants.RPR_WORKFLOW_ACTION_API + "002", "Unknown Exception"),
 
@@ -1313,6 +1319,8 @@ public enum PlatformErrorMessages {
 			"Workflow id  %s  not found in registration table"),
 
 	RPR_WAS_UNKNOWN_EXCEPTION(PlatformConstants.RPR_WORKFLOW_ACTION_SERVICE + "003", "Unknown Exception"),
+	
+	RPR_WIS_UNKNOWN_EXCEPTION(PlatformConstants.RPR_WORKFLOW_INSTANCE_SERVICE + "003", "Unknown Exception"),
 
 	RPR_WAS_REPROCESS_FAILED(PlatformConstants.RPR_WORKFLOW_ACTION_SERVICE + "004",
 			"When REPROCESS_FAILED then Resume should not occur"),

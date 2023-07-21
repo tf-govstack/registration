@@ -113,6 +113,8 @@ public class TokenValidator {
 			return String.join(",", APIAuthorityList.SECUREZONENOTIFICATION.getList());
 		else if (url.contains("workflowaction"))
 			return String.join(",", APIAuthorityList.WORKFLOWACTION.getList());
+		else if (url.contains("workflowinstance"))
+			return String.join(",", APIAuthorityList.WORKFLOWINSTANCE.getList());
 		else if (url.contains("workflow/search"))
 			return String.join(",", APIAuthorityList.WORKFLOWSEARCH.getList());
 		return null;
