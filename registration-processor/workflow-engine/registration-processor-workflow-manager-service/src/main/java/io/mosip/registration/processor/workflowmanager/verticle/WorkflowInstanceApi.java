@@ -4,70 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.mosip.registration.processor.core.util.JsonUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import io.mosip.kernel.core.exception.IOException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.JsonUtils;
-import io.mosip.registration.processor.core.abstractverticle.MessageDTO;
-import io.mosip.registration.processor.core.abstractverticle.MosipEventBus;
 import io.mosip.registration.processor.core.abstractverticle.MosipRouter;
-import io.mosip.registration.processor.core.abstractverticle.MosipVerticleAPIManager;
 import io.mosip.registration.processor.core.code.EventId;
 import io.mosip.registration.processor.core.code.EventName;
 import io.mosip.registration.processor.core.code.EventType;
 import io.mosip.registration.processor.core.code.ModuleName;
 import io.mosip.registration.processor.core.common.rest.dto.ErrorDTO;
-import io.mosip.registration.processor.core.exception.WorkflowActionException;
-import io.mosip.registration.processor.core.exception.WorkflowActionRequestValidationException;
 import io.mosip.registration.processor.core.exception.WorkflowInstanceException;
 import io.mosip.registration.processor.core.exception.WorkflowInstanceRequestValidationException;
 import io.mosip.registration.processor.core.exception.util.PlatformErrorMessages;
 import io.mosip.registration.processor.core.exception.util.PlatformSuccessMessages;
 import io.mosip.registration.processor.core.logger.LogDescription;
 import io.mosip.registration.processor.core.logger.RegProcessorLogger;
+import io.mosip.registration.processor.core.util.JsonUtil;
 import io.mosip.registration.processor.core.workflow.dto.InstanceResponseDTO;
-import io.mosip.registration.processor.core.workflow.dto.ResponseDTO;
-import io.mosip.registration.processor.core.workflow.dto.WorkflowActionDTO;
-import io.mosip.registration.processor.core.workflow.dto.WorkflowActionResponseDTO;
 import io.mosip.registration.processor.core.workflow.dto.WorkflowInstanceDTO;
 import io.mosip.registration.processor.core.workflow.dto.WorkflowInstanceResponseDTO;
 import io.mosip.registration.processor.rest.client.audit.builder.AuditLogRequestBuilder;
-import io.mosip.registration.processor.status.code.RegistrationStatusCode;
 import io.mosip.registration.processor.status.dto.InternalRegistrationStatusDto;
 import io.mosip.registration.processor.status.dto.RegistrationStatusDto;
 import io.mosip.registration.processor.status.service.RegistrationStatusService;
-import io.mosip.registration.processor.workflowmanager.service.WorkflowActionService;
 import io.mosip.registration.processor.workflowmanager.service.WorkflowInstanceService;
-import io.mosip.registration.processor.workflowmanager.validator.WorkflowActionRequestValidator;
 import io.mosip.registration.processor.workflowmanager.validator.WorkflowInstanceRequestValidator;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
-public class WorkflowInstanceApi extends MosipVerticleAPIManager {
-
-	private static final String STAGE_PROPERTY_PREFIX = "mosip.regproc.reprocessor.";
-
-	@Value("${vertx.cluster.configuration}")
-	private String clusterManagerUrl;
-
-	/** server port number. */
-	@Value("${mosip.regproc.workflow-manager.workflowinstance.server.port}")
-	private String port;
-
-	@Autowired
-	WorkflowSearchApi workflowSearchApi;
-
-	/** worker pool size. */
-	@Value("${worker.pool.size}")
-	private Integer workerPoolSize;
-
-	@Value("${mosip.regproc.workflow-manager.workflowinstance.eventbus.port}")
-	private String eventBusPort;
+public class WorkflowInstanceApi extends MosipRouter {
 
 	@Value("${mosip.registration.processor.datetime.pattern}")
 	private String dateTimePattern;
@@ -79,9 +49,6 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 	private String version;
 
 	@Autowired
-	MosipRouter router;
-
-	@Autowired
 	private WorkflowInstanceRequestValidator validator;
 
 	@Autowired
@@ -91,8 +58,6 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 	 */
 	@Value("${server.servlet.path}")
 	private String contextPath;
-
-	private MosipEventBus mosipEventBus = null;
 
 	/** The reg proc logger. */
 	private static Logger regProcLogger = RegProcessorLogger.getLogger(WorkflowInstanceApi.class);
@@ -111,30 +76,11 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 	@Autowired
 	AuditLogRequestBuilder auditLogRequestBuilder;
 
-	/**
-	 * Deploy verticle.
-	 */
-	public void deployVerticle() {
-		mosipEventBus = this.getEventBus(this, clusterManagerUrl, workerPoolSize);
+	public void setApiRoute(Router router) {
+		setRoute(router);
+		routes(this);
 	}
-
-	@Override
-	public void start() {
-		router.setRoute(this.postUrl(getVertx(), null, null));
-		this.routes(router);
-		// TODO : Create common verticle for api handling, change workflowInstanceApi
-		// also
-		// like workflowSearchApi and call both setApiRoute method from the common
-		// verticle class
-		workflowSearchApi.setApiRoute(router.getRouter());
-		this.createServer(router.getRouter(), Integer.parseInt(port));
-	}
-
-	@Override
-	public Integer getEventBusPort() {
-		return Integer.parseInt(eventBusPort);
-	}
-
+	
 	/**
 	 * contains all the routes in this stage
 	 *
@@ -144,7 +90,7 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 		router.post(contextPath + "/workflowinstance");
 		router.handler(this::processURL, this::failure);
 	}
-
+	
 	/**
 	 * method to process the context received.
 	 *
@@ -209,11 +155,12 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 		this.setResponse(routingContext, routingContext.failure().getMessage());
 	}
 
-	@Override
-	public MessageDTO process(MessageDTO object) {
-		return null;
-	}
-
+	public void setResponse(RoutingContext ctx, Object object) {
+		ctx.response().putHeader("content-type", "text/plain").putHeader("Access-Control-Allow-Origin", "*")
+				.putHeader("Access-Control-Allow-Methods", "GET, POST").setStatusCode(200)
+				.end(Json.encodePrettily(object));
+	};
+	
 	private void buildResponse(RoutingContext routingContext, String workflowInstanceId, List<ErrorDTO> errors) {
 		WorkflowInstanceResponseDTO workflowInstanceResponseDTO = new WorkflowInstanceResponseDTO();
 		workflowInstanceResponseDTO.setId(id);
@@ -248,11 +195,6 @@ public class WorkflowInstanceApi extends MosipVerticleAPIManager {
 
 		auditLogRequestBuilder.createAuditRequestBuilder(description.getMessage(), eventId, eventName, eventType,
 				moduleId, MODULE_NAME, registrationId, user);
-	}
-
-	@Override
-	protected String getPropertyPrefix() {
-		return STAGE_PROPERTY_PREFIX;
 	}
 
 }
