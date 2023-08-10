@@ -1308,6 +1308,8 @@ public enum PlatformErrorMessages {
 			"Invalid Request Value - %s"),
 
 	RPR_WAA_UNKNOWN_EXCEPTION(PlatformConstants.RPR_WORKFLOW_ACTION_API + "002", "Unknown Exception"),
+	
+	RPR_WIA_UNKNOWN_EXCEPTION(PlatformConstants.RPR_WORKFLOW_INSTANCE_API + "002", "Unknown Exception"),
 
 	RPR_WAS_UNKNOWN_WORKFLOW_ACTION(PlatformConstants.RPR_WORKFLOW_ACTION_SERVICE + "000",
 			"Workflow Action not supported"),
@@ -1329,6 +1331,8 @@ public enum PlatformErrorMessages {
 			"Workflow id  %s is not PAUSED"),
 
 	RPR_WAA_VALIDATION_SUCCESS(PlatformConstants.RPR_WORKFLOW_ACTION_API + "005", "Workflow id validated successfully"),
+	
+	RPR_WIA_VALIDATION_SUCCESS(PlatformConstants.RPR_WORKFLOW_INSTANCE_API + "003", "Workflow instance request validated successfully"),
 
 	RPR_WORKFLOW_ACTION_JOB_FAILED(PlatformConstants.RPR_WORKFLOW_ACTION_JOB, "Workflow action job  failed"),
 
