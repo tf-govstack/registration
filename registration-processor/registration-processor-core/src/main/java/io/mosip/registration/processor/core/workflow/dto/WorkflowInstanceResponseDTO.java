@@ -13,7 +13,7 @@ public class WorkflowInstanceResponseDTO extends BaseRestResponseDTO {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private InstanceResponseDTO response;
+	private WorkflowInstanceResponse response;
 
 	/** The error. */
 	private List<ErrorDTO> errors;

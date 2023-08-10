@@ -23,7 +23,7 @@ import io.mosip.registration.processor.core.exception.util.PlatformSuccessMessag
 import io.mosip.registration.processor.core.logger.LogDescription;
 import io.mosip.registration.processor.core.logger.RegProcessorLogger;
 import io.mosip.registration.processor.core.util.JsonUtil;
-import io.mosip.registration.processor.core.workflow.dto.InstanceResponseDTO;
+import io.mosip.registration.processor.core.workflow.dto.WorkflowInstanceResponse;
 import io.mosip.registration.processor.core.workflow.dto.WorkflowInstanceDTO;
 import io.mosip.registration.processor.core.workflow.dto.WorkflowInstanceResponseDTO;
 import io.mosip.registration.processor.rest.client.audit.builder.AuditLogRequestBuilder;
@@ -108,13 +108,16 @@ public class WorkflowInstanceApi extends MosipRouter {
 			regId = workflowInstanceDTO.getRequest().getRegistrationId();
 			regProcLogger.debug("WorkflowInstanceApi:processURL called for registration id {}", regId);
 			validator.validate(workflowInstanceDTO);
-			// String user = getUser(ctx);
+			String user = getUser(ctx);
 
 			InternalRegistrationStatusDto dto = workflowInstanceService
 					.addRegistrationProcess(workflowInstanceDTO.getRequest());
 
-			// workflowInstanceService.triggerProcess(dto);
-
+			isTransactionSuccessful = true;
+			description.setMessage(PlatformErrorMessages.RPR_WIA_VALIDATION_SUCCESS.getMessage());
+			updateAudit(description, regId, isTransactionSuccessful,
+					user);
+			
 			regProcLogger.info("Process the WorkflowInstance successfully  for registration id {}", regId);
 			buildResponse(ctx, dto.getWorkflowInstanceId(), null);
 
@@ -125,8 +128,8 @@ public class WorkflowInstanceApi extends MosipRouter {
 		} catch (WorkflowInstanceRequestValidationException e) {
 			logError(regId, e.getErrorCode(), e.getMessage(), e, ctx);
 		} catch (Exception e) {
-			logError(regId, PlatformErrorMessages.RPR_WAA_UNKNOWN_EXCEPTION.getCode(),
-					PlatformErrorMessages.RPR_WAA_UNKNOWN_EXCEPTION.getMessage(), e, ctx);
+			logError(regId, PlatformErrorMessages.RPR_WIA_UNKNOWN_EXCEPTION.getCode(),
+					PlatformErrorMessages.RPR_WIA_UNKNOWN_EXCEPTION.getMessage(), e, ctx);
 		}
 	}
 
@@ -169,7 +172,7 @@ public class WorkflowInstanceApi extends MosipRouter {
 		if (workflowInstanceId == null) {
 			workflowInstanceResponseDTO.setErrors(errors);
 		} else {
-			InstanceResponseDTO responseDTO = new InstanceResponseDTO();
+			WorkflowInstanceResponse responseDTO = new WorkflowInstanceResponse();
 			responseDTO.setWorkflowInstanceId(workflowInstanceId);
 			workflowInstanceResponseDTO.setResponse(responseDTO);
 		}

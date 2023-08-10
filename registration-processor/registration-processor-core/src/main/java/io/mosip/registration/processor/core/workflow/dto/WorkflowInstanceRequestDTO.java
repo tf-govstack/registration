@@ -1,5 +1,7 @@
 package io.mosip.registration.processor.core.workflow.dto;
 
+import org.json.JSONObject;
+
 import lombok.Data;
 @Data
 public class WorkflowInstanceRequestDTO {
@@ -11,5 +13,7 @@ public class WorkflowInstanceRequestDTO {
 	private String source;
 	
 	private String additionalInfoReqId;
+	
+	private RegistrationAdditionalInfoDTO additionalInfo;
 
 }
