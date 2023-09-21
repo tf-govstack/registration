@@ -132,7 +132,7 @@ public class WorkflowInstanceService {
 			syncRegistrationEntity.setWorkflowInstanceId(workflowInstanceId);
 			syncRegistrationEntity.setRegistrationId(rid);
 			syncRegistrationEntity.setSupervisorStatus("APPROVED");
-			syncRegistrationEntity.setRegistrationType("New");
+			syncRegistrationEntity.setRegistrationType(regRequest.getProcess());
 			syncRegistrationEntity.setLangCode("eng");
 			syncRegistrationEntity.setCreatedBy(USER);
 			syncRegistrationEntity.setCreateDateTime(LocalDateTime.now(ZoneId.of("UTC")));
