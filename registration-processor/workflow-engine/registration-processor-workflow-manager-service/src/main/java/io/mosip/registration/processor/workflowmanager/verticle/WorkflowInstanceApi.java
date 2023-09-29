@@ -111,7 +111,7 @@ public class WorkflowInstanceApi extends MosipRouter {
 			String user = getUser(ctx);
 
 			InternalRegistrationStatusDto dto = workflowInstanceService
-					.addRegistrationProcess(workflowInstanceDTO.getRequest());
+					.addRegistrationProcess(workflowInstanceDTO.getRequest(), user);
 
 			isTransactionSuccessful = true;
 			description.setMessage(PlatformErrorMessages.RPR_WIA_VALIDATION_SUCCESS.getMessage());
@@ -159,7 +159,7 @@ public class WorkflowInstanceApi extends MosipRouter {
 	}
 
 	public void setResponse(RoutingContext ctx, Object object) {
-		ctx.response().putHeader("content-type", "text/plain").putHeader("Access-Control-Allow-Origin", "*")
+		ctx.response().putHeader("content-type", "application/json").putHeader("Access-Control-Allow-Origin", "*")
 				.putHeader("Access-Control-Allow-Methods", "GET, POST").setStatusCode(200)
 				.end(Json.encodePrettily(object));
 	};

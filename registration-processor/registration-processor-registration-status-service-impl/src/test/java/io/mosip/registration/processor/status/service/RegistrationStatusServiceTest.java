@@ -225,7 +225,7 @@ public class RegistrationStatusServiceTest {
 	@Test
 	public void testAddRegistrationStatusSuccess() {
 
-		registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "", true);
+		registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "");
 		InternalRegistrationStatusDto dto = registrationStatusService.getRegistrationStatus("1001", "NEW", 1, "");
 		assertEquals("PACKET_UPLOADED_TO_LANDING_ZONE", dto.getStatusCode());
 	}
@@ -235,7 +235,7 @@ public class RegistrationStatusServiceTest {
 		DataAccessLayerException exp = new DataAccessLayerException(HibernateErrorCode.ERR_DATABASE.getErrorCode(),
 				"errorMessage", new Exception());
 		Mockito.when(registrationStatusDao.save(any())).thenThrow(exp);
-		registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "", true);
+		registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "");
 	}
 
 	@Test

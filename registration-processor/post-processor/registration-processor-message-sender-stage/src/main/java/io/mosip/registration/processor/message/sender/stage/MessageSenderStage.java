@@ -138,6 +138,9 @@ public class MessageSenderStage extends MosipVerticleAPIManager {
 
 	@Value("${mosip.notificationtype}")
 	private String notificationTypes;
+	
+	@Value("${registration.processor.multi-step-main-process}")
+	private String multiStepMainProcess;
 
 	/** The rest client service. */
 	@Autowired
@@ -369,7 +372,8 @@ public class MessageSenderStage extends MosipVerticleAPIManager {
 			NotificationTemplateType type) {
 		if (registrationStatusDto.getRegistrationType().equalsIgnoreCase(SyncTypeDto.LOST.getValue()))
 			type = NotificationTemplateType.LOST_UIN;
-		else if (registrationStatusDto.getRegistrationType().equalsIgnoreCase(SyncTypeDto.NEW.getValue()))
+		else if (registrationStatusDto.getRegistrationType().equalsIgnoreCase(SyncTypeDto.NEW.getValue()) || 
+				registrationStatusDto.getRegistrationType().equalsIgnoreCase(multiStepMainProcess))
 			type = NotificationTemplateType.UIN_CREATED;
 		else if (registrationStatusDto.getRegistrationType().equalsIgnoreCase(SyncTypeDto.UPDATE.getValue())
 		|| registrationStatusDto.getRegistrationType().equalsIgnoreCase(SyncTypeDto.RES_UPDATE.getValue()))

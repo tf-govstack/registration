@@ -2,7 +2,7 @@ package io.mosip.registration.processor.core.workflow.dto;
 
 import java.io.Serializable;
 
-public class RegistrationAdditionalInfoDTO implements Serializable {
+public class NotificationInfoDTO implements Serializable {
 
 	/**
 	 * 

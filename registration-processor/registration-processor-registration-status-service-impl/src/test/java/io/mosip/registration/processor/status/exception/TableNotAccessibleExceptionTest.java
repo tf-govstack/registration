@@ -29,10 +29,10 @@ public class TableNotAccessibleExceptionTest {
 		TablenotAccessibleException ex = new TablenotAccessibleException(
 				PlatformErrorMessages.RPR_RGS_REGISTRATION_TABLE_NOT_ACCESSIBLE.getMessage());
 
-		Mockito.doThrow(ex).when(registrationStatusService).addRegistrationStatus(registrationStatusDto, "", "", true);
+		Mockito.doThrow(ex).when(registrationStatusService).addRegistrationStatus(registrationStatusDto, "", "");
 		try {
 
-			registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "", true);
+			registrationStatusService.addRegistrationStatus(registrationStatusDto, "", "");
 
 		} catch (TablenotAccessibleException e) {
 			assertThat("Should throw TableNotAccessibleException with correct error codes", e.getErrorCode()
