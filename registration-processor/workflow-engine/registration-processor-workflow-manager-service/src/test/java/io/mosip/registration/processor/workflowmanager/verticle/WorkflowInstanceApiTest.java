@@ -370,7 +370,7 @@ public class WorkflowInstanceApiTest {
 		
 		Mockito.when(auditLogRequestBuilder.createAuditRequestBuilder(any(), any(), any(), any(), any(), any(), any()))
 				.thenReturn(null);
-		Mockito.when(workflowInstanceService.addRegistrationProcess(Mockito.any()))
+		Mockito.when(workflowInstanceService.addRegistrationProcess(Mockito.any(), Mockito.anyString()))
 				.thenReturn(registrationStatusDto);
 	}
 
@@ -395,7 +395,7 @@ public class WorkflowInstanceApiTest {
 
 		Mockito.doThrow(new WorkflowInstanceException(PlatformErrorMessages.RPR_WIS_UNKNOWN_EXCEPTION.getCode(),
 				PlatformErrorMessages.RPR_WIS_UNKNOWN_EXCEPTION.getMessage())).when(workflowInstanceService)
-				.addRegistrationProcess(any());
+				.addRegistrationProcess(any(), any());
 
 		workflowInstanceApi.processURL(ctx);
 		assertTrue(responseObject);
@@ -409,34 +409,4 @@ public class WorkflowInstanceApiTest {
 		assertTrue(responseObject);
 	}
 
-//	@Test
-//	public void testWorkflowIdNotPresent() {
-//		internalRegistrationStatusDtos = new ArrayList<InternalRegistrationStatusDto>();
-//		Mockito.when(registrationStatusService.getByIdsAndTimestamp(Mockito.any()))
-//				.thenReturn(internalRegistrationStatusDtos);
-//		workflowInstanceApi.processURL(ctx);
-//		assertTrue(responseObject);
-//	}
-//	
-//	@Test
-//	public void testWorkflowIdVariousScenario() {
-//		InternalRegistrationStatusDto registrationStatusDto1 = new InternalRegistrationStatusDto();
-//		registrationStatusDto1.setRegistrationId("2018701130000410092018110735");
-//		registrationStatusDto1.setRegistrationType("NEW");
-//		registrationStatusDto1.setRegistrationStageName("SecurezoneNotificationStage");
-//		registrationStatusDto1.setLatestTransactionStatusCode(RegistrationTransactionStatusCode.SUCCESS.name());
-//		internalRegistrationStatusDtos.add(registrationStatusDto1);
-//		registrationStatusDto1.setStatusCode(RegistrationStatusCode.PAUSED.name());
-//		Mockito.when(registrationStatusService.getByIdsAndTimestamp(Mockito.any()))
-//				.thenReturn(internalRegistrationStatusDtos);
-//		workflowInstanceApi.processURL(ctx);
-//		assertTrue(responseObject);
-//	}
-//
-//	@Test
-//	public void testWorkflowIdNotPaused() {
-//		registrationStatusDto.setStatusCode(RegistrationStatusCode.PROCESSING.name());
-//		workflowInstanceApi.processURL(ctx);
-//		assertTrue(responseObject);
-//	}
 }

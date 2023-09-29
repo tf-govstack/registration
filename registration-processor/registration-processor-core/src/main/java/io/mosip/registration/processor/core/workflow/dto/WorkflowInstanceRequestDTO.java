@@ -14,6 +14,6 @@ public class WorkflowInstanceRequestDTO {
 	
 	private String additionalInfoReqId;
 	
-	private RegistrationAdditionalInfoDTO additionalInfo;
+	private NotificationInfoDTO notificationInfo;
 
 }
