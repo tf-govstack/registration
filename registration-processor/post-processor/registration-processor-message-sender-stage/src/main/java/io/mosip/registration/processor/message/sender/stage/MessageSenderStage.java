@@ -138,7 +138,7 @@ public class MessageSenderStage extends MosipVerticleAPIManager {
 
 	@Value("${mosip.notificationtype}")
 	private String notificationTypes;
-	
+
 	/** The rest client service. */
 	@Autowired
 	private RegistrationProcessorRestClientService<Object> restClientService;
