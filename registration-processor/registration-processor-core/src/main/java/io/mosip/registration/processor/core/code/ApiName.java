@@ -7,6 +7,9 @@ package io.mosip.registration.processor.core.code;
  */
 public enum ApiName {
 
+	CREDENTIALREQUESTV2,
+	IDREPORETRIEVEIDBYID,
+
 	/** The auth. */
 	AUTH,
 
@@ -197,6 +200,7 @@ public enum ApiName {
 	IDREPOUPDATEDRAFT,
 	IDREPOPUBLISHDRAFT,
 	IDREPOEXTRACTBIOMETRICS;
+
 
 }
 

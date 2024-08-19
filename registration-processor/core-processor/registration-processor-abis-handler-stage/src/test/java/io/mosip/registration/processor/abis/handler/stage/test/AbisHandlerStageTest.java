@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,8 +33,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 
 import io.mosip.kernel.biometrics.constant.BiometricType;
 import io.mosip.kernel.biometrics.constant.QualityType;
@@ -56,6 +53,7 @@ import io.mosip.registration.processor.core.abstractverticle.MessageBusAddress;
 import io.mosip.registration.processor.core.abstractverticle.MessageDTO;
 import io.mosip.registration.processor.core.abstractverticle.MosipEventBus;
 import io.mosip.registration.processor.core.common.rest.dto.ErrorDTO;
+import io.mosip.registration.processor.core.constant.JsonConstant;
 import io.mosip.registration.processor.core.constant.PolicyConstant;
 import io.mosip.registration.processor.core.exception.ApisResourceAccessException;
 import io.mosip.registration.processor.core.exception.PacketManagerException;
@@ -179,6 +177,7 @@ public class AbisHandlerStageTest {
 					// TODO Auto-generated method stub
 
 				}
+
 			};
 		}
 
@@ -204,18 +203,22 @@ public class AbisHandlerStageTest {
 		ReflectionTestUtils.setField(abisHandlerStage, "internalDomainName", "localhost");
 		Mockito.when(env.getProperty("mosip.registration.processor.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		
+		Map<String, Map<String, List<String>>> biometricModalitySegmentsMapforAgeGroup = new HashMap<String, Map<String, List<String>>>();
 		Map<String, List<String>> biometricModalitySegmentsMap = new HashMap();
-		Map<String, List<String>> biometricModalitySegmentsMapInfant = new HashMap();
-		biometricModalitySegmentsMapInfant.put("Face", getFaceList());
+		Map<String, List<String>> biometricModalitySegmentsMapForInfant = new HashMap();
+		biometricModalitySegmentsMapForInfant.put("Face", getFaceList());
 		biometricModalitySegmentsMap.put("Finger", getFingerList());
 		biometricModalitySegmentsMap.put("Iris", getIrisList());
 		biometricModalitySegmentsMap.put("Face", getFaceList());
-		ReflectionTestUtils.setField(abisHandlerStage, "biometricModalitySegmentsMapInfant", biometricModalitySegmentsMapInfant);
-		ReflectionTestUtils.setField(abisHandlerStage, "biometricModalitySegmentsMapMinor", biometricModalitySegmentsMap);
-		ReflectionTestUtils.setField(abisHandlerStage, "biometricModalitySegmentsMapAdult", biometricModalitySegmentsMap);
-		ReflectionTestUtils.setField(abisHandlerStage, "exceptionSegmentsMap", getExceptionModalityMap());
+		biometricModalitySegmentsMapforAgeGroup.put("INFANT", biometricModalitySegmentsMapForInfant);
+		biometricModalitySegmentsMapforAgeGroup.put("MINOR", biometricModalitySegmentsMap);
+		biometricModalitySegmentsMapforAgeGroup.put("ADULT", biometricModalitySegmentsMap);
+		biometricModalitySegmentsMapforAgeGroup.put("DEFAULT", biometricModalitySegmentsMap);
 
+		ReflectionTestUtils.setField(abisHandlerStage, "biometricModalitySegmentsMapforAgeGroup", biometricModalitySegmentsMapforAgeGroup);
+		ReflectionTestUtils.setField(abisHandlerStage, "exceptionSegmentsMap", getExceptionModalityMap());
+		ReflectionTestUtils.setField(abisHandlerStage, "regClientVersionsBeforeCbeffOthersAttritube",
+				Arrays.asList("1.1.3"));
 		Mockito.when(env.getProperty("DATASHARECREATEURL")).thenReturn("/v1/datashare/create");
 		AbisApplicationDto dto = new AbisApplicationDto();
 		dto.setCode("ABIS1");
@@ -487,7 +490,8 @@ public class AbisHandlerStageTest {
 		dto.setRid("10003100030001520190422074511");
 		MessageDTO result = abisHandlerStage.process(dto);
 
-		assertTrue(result.getMessageBusAddress().getAddress().equalsIgnoreCase("abis-middle-ware-bus-in"));
+		assertFalse(result.getInternalError());
+		assertTrue(result.getIsValid());
 	}
 
 	@Test
@@ -838,11 +842,12 @@ public class AbisHandlerStageTest {
 
 		defaultMockToProcess();
 
+		Map<String, Map<String, List<String>>> biometricModalitySegmentsMapforAgeGroup = new HashMap<String, Map<String, List<String>>>();
 		Map<String, List<String>> biometricModalitySegmentsMap = new HashMap();
+
 		biometricModalitySegmentsMap.put("Finger", getFingerList());
 		biometricModalitySegmentsMap.put("Iris", getIrisList());
-		ReflectionTestUtils.setField(abisHandlerStage, "biometricModalitySegmentsMapAdult", biometricModalitySegmentsMap);
-		ReflectionTestUtils.setField(abisHandlerStage, "exceptionSegmentsMap", getExceptionModalityMap());
+		biometricModalitySegmentsMapforAgeGroup.put("DEFAULT", biometricModalitySegmentsMap);
 
 		MessageDTO dto = new MessageDTO();
 		dto.setRid("10003100030001520190422074511");
@@ -968,12 +973,11 @@ public class AbisHandlerStageTest {
 		
 
 		exceptionBiometrcisMap.put("applicant", applicantExceptionBiometrcisMap);
-		Gson gson = new Gson();
-        Type gsonType = new TypeToken<HashMap>(){}.getType();
-		
-        String gsonString = gson.toJson(exceptionBiometrcisMap,gsonType);
-        
+        String gsonString =mapper.writeValueAsString(exceptionBiometrcisMap);
+
 		metaInfoMap.put("exceptionBiometrics", gsonString);
+		metaInfoMap.put(JsonConstant.METADATA,
+				"[{\n  \"label\" : \"Registration Client Version Number\",\n  \"value\" : \"1.2.0\"\n}]");
 		Mockito.when(packetManagerService.getMetaInfo(any(), any(), any())).thenReturn(metaInfoMap);
 	}
 	

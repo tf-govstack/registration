@@ -146,6 +146,7 @@ public class AbisMiddleWareStageTest {
 					// TODO Auto-generated method stub
 
 				}
+
 			};
 		}
 
@@ -245,7 +246,8 @@ public class AbisMiddleWareStageTest {
 			}
 
 			@Override
-			public void createConnection(String username, String password, String brokerUrl) {
+			public void createConnection(String username, String password, String brokerUrl,
+					List<String> trustedPackage) {
 				// TODO Auto-generated method stub
 
 			}
@@ -259,7 +261,7 @@ public class AbisMiddleWareStageTest {
 			}
 
 			@Override
-			public void createConnection(String username, String password, String brokerUrl) {
+			public void createConnection(String username, String password, String brokerUrl,List<String> trustedPackage) {
 				// TODO Auto-generated method stub
 
 			}
