@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.registration.processor.status.entity.RegistrationStatusEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -134,6 +135,7 @@ public class PacketInfoDao {
 		demo.setGenderCode(object.getGender());
 		demo.setDob(object.getDob());
 		demo.setPhone(object.getPhone());
+		demo.setNrcId(object.getNrcId());
 		demo.setEmail(object.getEmail());
 		demo.setPostalcode(object.getPostalCode());
 		return demo;
@@ -183,8 +185,7 @@ public class PacketInfoDao {
 	 *            the lang code
 	 * @return the all demographic entities
 	 */
-	private List<IndividualDemographicDedupeEntity> getAllDemographicEntities(String name, String gender, String dob,
-			String langCode) {
+	private List<IndividualDemographicDedupeEntity> getAllDemographicEntities(String name, String gender, String nrcId, String dob,String langCode) {
 		Map<String, Object> params = new HashMap<>();
 		String className = IndividualDemographicDedupeEntity.class.getSimpleName();
 		String alias = IndividualDemographicDedupeEntity.class.getName().toLowerCase().substring(0, 1);
@@ -201,6 +202,11 @@ public class PacketInfoDao {
 		if (dob != null) {
 			query.append(alias + ".dob=:dob ").append(AND);
 			params.put("dob", dob);
+
+			if (nrcId != null) {
+				query.append(alias + ".nrcId=:nrcId ").append(AND);
+				params.put("nrcId", nrcId);
+			}
 		}
 		query.append(alias + ".id.langCode=:langCode").append(AND);
 		params.put("langCode", langCode);
@@ -222,10 +228,10 @@ public class PacketInfoDao {
 	 *            the lang code
 	 * @return the all demographic info dtos
 	 */
-	public List<DemographicInfoDto> getAllDemographicInfoDtos(String name, String gender, String dob, String langCode) {
+	public List<DemographicInfoDto> getAllDemographicInfoDtos(String name, String gender, String dob,String nrcId, String langCode) {
 
 		List<DemographicInfoDto> demographicInfoDtos = new ArrayList<>();
-		List<IndividualDemographicDedupeEntity> demographicInfoEntities = getAllDemographicEntities(name, gender, dob,
+		List<IndividualDemographicDedupeEntity> demographicInfoEntities = getAllDemographicEntities(name, gender, dob,nrcId,
 				langCode);
 		for (IndividualDemographicDedupeEntity entity : demographicInfoEntities) {
 			demographicInfoDtos.add(convertEntityToDemographicDto(entity));
@@ -581,7 +587,7 @@ public class PacketInfoDao {
 	 *            the status code
 	 * @return the processed or processing reg ids
 	 */
-	public List<String> getProcessedOrProcessingRegIds(List<String> matchedRegIds, String statusCode) {
+	public List<String> getProcessedOrProcessingRegIds(List<String> matchedRegIds, List<String> statusCode) {
 		return registrationRepositary.getProcessedOrProcessingRegIds(matchedRegIds, statusCode);
 	}
 
@@ -592,12 +598,10 @@ public class PacketInfoDao {
 	 *            the matched reg ids
 	 * @param statusCode1
 	 *            the status code
-	 * @param statusCode2
-	 *            the status code
 	 * @return the processed or processing reg ids
 	 */
-	public List<String> getWithoutStatusCodes(List<String> matchedRegIds, String statusCode1, String statusCode2) {
-		return registrationRepositary.getWithoutStatusCodes(matchedRegIds, "REJECTED", "PROCESSED");
+	public List<RegistrationStatusEntity> getWithoutStatusCode(List<String> matchedRegIds, String statusCode) {
+		return registrationRepositary.getWithoutStatusCode(matchedRegIds, statusCode);
 	}
 
 	/**

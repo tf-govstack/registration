@@ -19,7 +19,10 @@ public enum  ProviderStageName {
     VERIFICATION("verification"),
     UIN_GENERATOR("uingenerator"),
     WORKFLOW_MANAGER("workflowmanager"),
-    MESSAGE_SENDER("messagesender");
+    MESSAGE_SENDER("messagesender"),
+    CREDENTIAL_REQUESTOR("credentialrequestor"),
+    PAYMENT_VALIDATOR("paymentvalidator"),
+    CITIZENSHIP_VERIFICATION("citizenshipverification");
 
     private String value;
 

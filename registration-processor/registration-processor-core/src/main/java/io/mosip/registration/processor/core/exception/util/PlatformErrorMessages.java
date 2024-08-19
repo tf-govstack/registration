@@ -199,8 +199,14 @@ public enum PlatformErrorMessages {
 	RPR_RGS_DATE_VALIDATION_FAILED(PlatformConstants.RPR_REGISTRATION_STATUS_MODULE + "034",
 			"searching between date should be less then 30 days - %s"),
 	
+	/** The rpr rgs io exception */
+	RPR_RGS_IOEXCEPTION(PlatformConstants.RPR_REGISTRATION_STATUS_MODULE + "035" , "IO Exception"),
+
 	LINK_FOR_USERID_INDIVIDUALID_FAILED_STATUS_EXCEPTION(PlatformConstants.RPR_REGISTRATION_STATUS_MODULE + "035",
 			"Unable to get the IndividualId for UserId"),
+
+	UNABLE_TO_ACCESS_API(PlatformConstants.RPR_REGISTRATION_STATUS_MODULE + "036",
+			"Unable to access API"),
 
 	/** The rpr pis registration table not accessible. */
 	// Packet Info Storage Exception error code and message
@@ -404,6 +410,16 @@ public enum PlatformErrorMessages {
 
 	RPR_PVM_PACKET_REJECTED(PlatformConstants.RPR_PACKET_VALIDATOR_MODULE + "011",
 			"Rejected by Supervisor"),
+
+	RPR_PVM_PACKET_CREATED_DATE_TIME_EMPTY_OR_NULL(PlatformConstants.RPR_PACKET_VALIDATOR_MODULE + "017",
+			"Packet Created Date time is Null or Empty"),
+
+	RPR_PVM_PACKET_CREATED_DATE_TIME_PARSE_EXCEPTION(PlatformConstants.RPR_PACKET_VALIDATOR_MODULE + "018",
+			"Packet Created Date time is not in correct format"),
+
+	RPR_PVM_INVALID_ARGUMENT_EXCEPTION(PlatformConstants.RPR_PACKET_VALIDATOR_MODULE + "019",
+			"Invalid Argument"),
+
 
 	/** The packet classification failed. */
 	PACKET_CLASSIFICATION_FAILED(PlatformConstants.RPR_PACKET_CLASSIFIER_MODULE + "000", "Packet Classification failed"),
@@ -1018,7 +1034,7 @@ public enum PlatformErrorMessages {
 	/** The stage processing failed. */
 	RPR_SYS_STAGE_PROCESSING_FAILED(PlatformConstants.RPR_SYSTEM_EXCEPTION + "021",
 			"Stage processing of message failed with an exception"),
-	
+
 	/** The rpr sys connection exception. */
 	RPR_SYS_QUEUE_CONNECTION_EXCEPTION(PlatformConstants.RPR_SYSTEM_EXCEPTION + "022",
 			"Error while connecting to active mq"),
@@ -1128,6 +1144,11 @@ public enum PlatformErrorMessages {
 	/** The rpr prt vid exception. */
 	RPR_PRT_VID_NOT_AVAILABLE_EXCEPTION(PlatformConstants.RPR_PRINTING_MODULE + "027",
 			"vid not available"),
+
+	/** The rpr prt print issuer not found in property. */
+	RPR_PRT_ISSUER_NOT_FOUND_IN_PROPERTY(PlatformConstants.RPR_PRINTING_MODULE + "028", "Print issuer property is not found"),
+
+	RPR_PRT_PARSING_ADDITIONAL_CRED_CONFIG(PlatformConstants.RPR_PRINTING_MODULE + "029", "issue with metaInfoFields in credential partner profiles."),
 
 	/** The rpr rgs registration connector not accessible. */
 	RPR_RGS_REGISTRATION_CONNECTOR_NOT_ACCESSIBLE("", "Registration connector stage is not accessible "),
@@ -1418,8 +1439,30 @@ public enum PlatformErrorMessages {
 	RPR_FINALIZATION_STAGE_DRAFT_REQUEST_UNAVAILABLE(PlatformConstants.RPR_FINALIZATION_STAGE + "003",
 			"Draft request is unavaialble in id-repo draft repository."),
 	RPR_FINALIZATION_STAGE_API_RESOURCE_EXCEPTION(PlatformConstants.RPR_FINALIZATION_STAGE + "004",
-			"Not able to access the API resource")
+			"Not able to access the API resource"),
+
+	INDIVIDUAL_BIOMETRIC_AUTHENTICATION_FAILED(PlatformConstants.RPR_BIOMETRIC_AUTHENTICATION_MODULE + "004",
+			"Bio authentication failed"),
+	
+	/** Payment validator stage errors */
+	RPR_PYVS_PACKET_RETRIEVAL_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "001", "Failed to retrieve packet details"),
+	RPR_PYVS_WRONG_PROCESS(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "002", "Wrong process or usecase"),
+	RPR_PYVS_INVALID_PRN(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "003", "Invalid PRN was entered"),
+	RPR_PYVS_UIN_DOESNT_EXIST(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "004", "NIN entered does not exist"),
+	RPR_PYVS_PRN_NOT_PAID(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "005", "PRN not paid for"),
+	RPR_PYVS_PRN_NOT_VALID_FOR_USECASE(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "006", "PRN not valid for process or usecase"),
+	RPR_PYVS_PRN_ALREADY_USED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "007", "PRN already used"),
+	RPR_PYVS_CONSUMPTION_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "008", "PRN consumption failed"),
+	RPR_PYVS_GATEWAY_SERVICE_ACCESS_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "009", "Failed to access Payment gateway API"),
+	RPR_PYVS_PRN_STATUS_REQUEST_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "010", "PRN status request failed"),
+	RPR_PYVS_IDREPO_UIN_RETRIEVAL_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "011", "UIN details retrieval from IDRepo failed"), 
+	RPR_PYVS_FAILED(PlatformConstants.RPR_PAYMENT_VALIDATOR_STAGE + "012", "Payment Validation failed"),
+	// Citizenship Verification stage
+	RPR_CITIZENSHIP_VERIFICATION_FAILED(PlatformConstants.RPR_CITIZENSHIP_VERIFICATION_MODULE + "001", "Citizenship Verification failed")
+	
 	;
+
+
 
 	/** The error message. */
 	private final String errorMessage; 

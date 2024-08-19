@@ -7,9 +7,9 @@
 	<parent>
 		<groupId>io.mosip.registrationprocessor</groupId>
 		<artifactId>registration-processor</artifactId>
-		<version>1.2.0.1-B1</version>
+		<version>1.2.0.1</version>
 	</parent>
-	<version>1.2.0.1-B1</version>
+	<version>1.2.0.1</version>
 	<artifactId>stage-groups</artifactId>
 	<name>stage-groups</name>
 	<properties>
@@ -23,5 +23,7 @@
 		<module>registration-processor-stage-group-5</module>
 		<module>registration-processor-stage-group-6</module>
 		<module>registration-processor-stage-group-7</module>
-    </modules>
+		<module>registration-processor-stage-group-8</module>
+		<module>registration-processor-stage-group-9</module>
+	</modules>
 </project>

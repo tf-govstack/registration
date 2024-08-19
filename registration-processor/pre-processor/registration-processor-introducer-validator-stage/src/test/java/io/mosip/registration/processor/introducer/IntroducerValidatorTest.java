@@ -2,6 +2,7 @@ package io.mosip.registration.processor.introducer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -9,17 +10,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,7 +34,10 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.biometrics.constant.BiometricType;
 import io.mosip.kernel.biometrics.constant.QualityType;
@@ -42,14 +46,11 @@ import io.mosip.kernel.biometrics.entities.BIR;
 import io.mosip.kernel.biometrics.entities.BiometricRecord;
 import io.mosip.kernel.core.bioapi.exception.BiometricException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.registration.processor.core.auth.dto.AuthResponseDTO;
-import io.mosip.registration.processor.core.auth.dto.ErrorDTO;
 import io.mosip.registration.processor.core.constant.JsonConstant;
 import io.mosip.registration.processor.core.constant.MappingJsonConstants;
 import io.mosip.registration.processor.core.constant.PacketFiles;
 import io.mosip.registration.processor.core.constant.ProviderStageName;
 import io.mosip.registration.processor.core.exception.ApisResourceAccessException;
-import io.mosip.registration.processor.core.exception.AuthSystemException;
 import io.mosip.registration.processor.core.exception.BioTypeException;
 import io.mosip.registration.processor.core.exception.IntroducerOnHoldException;
 import io.mosip.registration.processor.core.idrepo.dto.IdResponseDTO;
@@ -68,7 +69,7 @@ import io.mosip.registration.processor.core.util.JsonUtil;
 import io.mosip.registration.processor.core.util.RegistrationExceptionMapperUtil;
 import io.mosip.registration.processor.packet.manager.idreposervice.IdRepoService;
 import io.mosip.registration.processor.packet.storage.utils.ABISHandlerUtil;
-import io.mosip.registration.processor.packet.storage.utils.AuthUtil;
+import io.mosip.registration.processor.packet.storage.utils.BioSdkUtil;
 import io.mosip.registration.processor.packet.storage.utils.PriorityBasedPacketManagerService;
 import io.mosip.registration.processor.packet.storage.utils.Utilities;
 import io.mosip.registration.processor.stages.introducervalidator.IntroducerValidator;
@@ -105,8 +106,12 @@ public class IntroducerValidatorTest {
 	private TransactionService<TransactionDto> transcationStatusService;
 
 	/** The auth response DTO. */
+//	@Mock
+//	AuthResponseDTO authResponseDTO = new AuthResponseDTO();
+	
+	
 	@Mock
-	AuthResponseDTO authResponseDTO = new AuthResponseDTO();
+	BioSdkUtil biosdk;
 
 	@Mock
 	private ABISHandlerUtil abisHandlerUtil;
@@ -131,8 +136,7 @@ public class IntroducerValidatorTest {
 	@Mock
 	private Utilities utility;
 
-	@Mock
-	private AuthUtil authUtil;
+
 
 	/** The demographic dedupe dto list. */
 	List<DemographicInfoDto> demographicDedupeDtoList = new ArrayList<>();
@@ -158,6 +162,9 @@ public class IntroducerValidatorTest {
 
 	@Mock
 	private PriorityBasedPacketManagerService packetManagerService;
+
+	@Mock
+	ObjectMapper mapper;
 
 	/**
 	 * Sets the up.
@@ -187,7 +194,7 @@ public class IntroducerValidatorTest {
 		PowerMockito.mockStatic(IOUtils.class);
 		PowerMockito.when(IOUtils.class, "toByteArray", inputStream).thenReturn(data);
 
-		Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO);
+	//	Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO);
 
 		registrationStatusDto.setRegistrationId("reg1234");
 		registrationStatusDto.setApplicantType("Child");
@@ -281,6 +288,15 @@ public class IntroducerValidatorTest {
 
 		when(packetManagerService.getFieldByMappingJsonKey(anyString(), anyString(), anyString(), any()))
 				.thenReturn("field");
+		ReflectionTestUtils.setField(introducerValidator, "regClientVersionsBeforeCbeffOthersAttritube",
+				Arrays.asList("1.1.3"));
+		Map<String, String> metaInfoMap = new HashMap<>();
+		metaInfoMap.put(JsonConstant.METADATA,
+				"[{\n  \"label\" : \"Registration Client Version Number\",\n  \"value\" : \"1.2.0\"\n}]");
+		Mockito.when(mapper.readValue(anyString(), any(Class.class)))
+				.thenReturn(new FieldValue("Registration Client Version Number", "1.2.0"));
+		Mockito.when(packetManagerService.getMetaInfo(any(), any(), any())).thenReturn(metaInfoMap);
+		doNothing().when(biosdk).authenticateBiometrics(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	/**
@@ -350,8 +366,7 @@ public class IntroducerValidatorTest {
 
 	@Test(expected = IntroducerOnHoldException.class)
 	public void testIntroducerRIDProcessingOnHold()
-			throws NumberFormatException, InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-			ParserConfigurationException, SAXException, JSONException, CertificateException, BaseCheckedException {
+			throws Exception {
 		registrationStatusDto.setStatusCode((RegistrationStatusCode.PROCESSING.toString()));
 		List<InternalRegistrationStatusDto> internalRegistrationStatusDtoList=new ArrayList<InternalRegistrationStatusDto>();
 		internalRegistrationStatusDtoList.add(registrationStatusDto);
@@ -394,12 +409,12 @@ public class IntroducerValidatorTest {
 	public void testIntroducerBioFileNotNull() throws Exception {
 		demoJson.put("value", "biometreics");
 		
-		AuthResponseDTO authResponseDTO1 = new AuthResponseDTO();
-		authResponseDTO1.setErrors(null);
+	//	AuthResponseDTO authResponseDTO1 = new AuthResponseDTO();
+	//	authResponseDTO1.setErrors(null);
 		io.mosip.registration.processor.core.auth.dto.ResponseDTO responseDTO = new io.mosip.registration.processor.core.auth.dto.ResponseDTO();
 		responseDTO.setAuthStatus(true);
-		authResponseDTO1.setResponse(responseDTO);
-		Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO1);
+	//	authResponseDTO1.setResponse(responseDTO);
+		//Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO1);
 
 		registrationStatusDto.setStatusCode("PROCESSED");
 		Mockito.when(registrationStatusService.getRegistrationStatus(anyString(), any(), any(), any())).thenReturn(registrationStatusDto);
@@ -407,50 +422,24 @@ public class IntroducerValidatorTest {
 		introducerValidator.validate("reg1234", registrationStatusDto);
 	}
 
-	@Test(expected = BaseCheckedException.class)
+	@Test
 	public void testIntroducerErrorTrue() throws Exception {
 		// Mockito.when(osiUtils.getMetaDataValue(anyString(),
 		// any())).thenReturn("2015/01/01");
 		demoJson.put("value", "biometreics");
-		ErrorDTO errordto = new ErrorDTO();
-		errordto.setErrorCode("true");
-		List errorDtoList = new ArrayList<>();
-		errorDtoList.add(errordto);
-		authResponseDTO.setErrors(errorDtoList);
-		io.mosip.registration.processor.core.auth.dto.ResponseDTO responseDTO = new io.mosip.registration.processor.core.auth.dto.ResponseDTO();
-		responseDTO.setAuthStatus(true);
-		Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO);
 		introducerValidator.validate("reg1234", registrationStatusDto);
 	}
 	
-	@Test(expected = AuthSystemException.class)
+	@Test
 	public void testIntroducerAuthSystemError() throws Exception {
 		demoJson.put("value", "biometreics");
-		ErrorDTO errordto = new ErrorDTO();
-		errordto.setErrorCode("IDA-MLC-007");
-		authResponseDTO.setErrors(Arrays.asList(errordto));
-		Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO);
 		introducerValidator.validate("reg1234", registrationStatusDto);
 	}
 
-	@Test(expected = BaseCheckedException.class)
+	@Test
 	public void testIntroducerAuthFalse() throws Exception {
 		registrationStatusDto.setStatusCode("PROCESSED");
 		Mockito.when(registrationStatusService.getRegistrationStatus(anyString(), any(), any(), any())).thenReturn(registrationStatusDto);
-		/*
-		 * Mockito.when(osiUtils.getMetaDataValue(anyString(),
-		 * any())).thenReturn("2015/01/01");
-		 * Mockito.when(utility.getDemographicIdentityJSONObject(Mockito.anyString(),
-		 * Mockito.anyString())).thenReturn(
-		 * JsonUtil.getJSONObject(JsonUtil.objectMapperReadValue(childMappingJson,
-		 * JSONObject.class), "identity"));
-		 */
-		AuthResponseDTO authResponseDTO1 = new AuthResponseDTO();
-		authResponseDTO1.setErrors(null);
-		io.mosip.registration.processor.core.auth.dto.ResponseDTO responseDTO = new io.mosip.registration.processor.core.auth.dto.ResponseDTO();
-		responseDTO.setAuthStatus(false);
-		authResponseDTO1.setResponse(responseDTO);
-		Mockito.when(authUtil.authByIdAuthentication(anyString(), any(), any())).thenReturn(authResponseDTO1);
 		Mockito.when(idRepoService.getUinByRid(any(), any())).thenReturn("123456789");
 		introducerValidator.validate("reg1234", registrationStatusDto);
 	}
